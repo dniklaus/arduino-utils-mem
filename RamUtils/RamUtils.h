@@ -11,6 +11,10 @@
 class RamUtils
 {
 public:
+  /**
+   * Returns the free ram memory space.
+   * @return Free Memory space in Bytes
+   */
   static int getFreeRam();
 
 private:
