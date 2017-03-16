@@ -7,6 +7,9 @@
 
 #include <Arduino.h>
 #include <RamUtils.h>
+#include <malloc.h>
+#include <stdlib.h>
+#include <stdio.h>
 
 /*!
  * Returns the free ram memory space.
@@ -14,18 +17,17 @@
  */
 int RamUtils::getFreeRam()
 {
+  int free_memory = 0;
 #if defined (__arm__) && defined (__SAM3X8E__) // Arduino Due
-// should use uinstd.h to define sbrk but on Arduino Due this causes a conflict
-  extern "C" char* sbrk(int incr);
-  int getFreeRam(void)
-  {
-    char top;
-    return &top - reinterpret_cast<char*>(sbrk(0));
-  }
+  struct mallinfo mi=mallinfo();
+  extern char* _sbrk(int i);
+  char* heapend = _sbrk(0);
+  register char * stack_ptr asm("sp");
+  free_memory = stack_ptr - heapend + mi.fordblks;
+  return free_memory;
 #else // AVR
   extern int __bss_end;
   extern int *__brkval;
-  int free_memory;
   if ((int) __brkval == 0)
   {
     free_memory = ((int) &free_memory) - ((int) &__bss_end);
