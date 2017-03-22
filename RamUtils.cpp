@@ -7,9 +7,11 @@
 
 #include <Arduino.h>
 #include <RamUtils.h>
+#if defined (__arm__) && defined (__SAM3X8E__) // Arduino Due
 #include <malloc.h>
 #include <stdlib.h>
 #include <stdio.h>
+#endif
 
 /*!
  * Returns the free ram memory space.
